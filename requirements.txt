@@ -14,3 +14,6 @@ PyPDF2
 transformers
 torch
 torchvision
+pytesseract
+pdf2image
+pillow

@@ -62,29 +62,37 @@ def load_pdf_and_create_vectors(pdf_paths, vector_store_path="vectorstore"):
                 
                 try:
                     documents = loader.load()
+                    total_chars = sum(len(doc.page_content.strip()) for doc in documents) if documents else 0
+                    
+                    if total_chars < 50:
+                        print(f"⚠️ Very little text extracted ({total_chars} chars). PDF might be scanned. Triggering OCR fallback...")
+                        raise Exception("Scanned PDF detected")
+                        
                     print(f"🔍 PyMuPDFLoader returned {len(documents)} documents")
                 except Exception as load_error:
-                    print(f"❌ PyMuPDFLoader failed for {pdf_path}: {load_error}")
+                    print(f"❌ Initial load failed or scanned PDF detected for {pdf_path}: {load_error}")
                     
-                    # Try alternative: read as binary and create document manually
+                    # Try alternative: OCR using pdf2image and pytesseract
                     try:
-                        print(f"🔄 Attempting manual PDF processing for: {pdf_path}")
-                        import PyPDF2
+                        print(f"🔄 Attempting OCR processing for: {pdf_path}")
+                        from pdf2image import convert_from_path
+                        import pytesseract
+                        from langchain_core.documents import Document
                         
-                        with open(pdf_path, 'rb') as file:
-                            pdf_reader = PyPDF2.PdfReader(file)
-                            text_content = ""
-                            
-                            for page_num, page in enumerate(pdf_reader.pages):
-                                try:
-                                    text_content += page.extract_text() + "\n"
-                                except Exception as page_error:
-                                    print(f"⚠️ Error reading page {page_num}: {page_error}")
-                                    continue
+                        # Convert PDF pages to images
+                        images = convert_from_path(pdf_path)
+                        text_content = ""
+                        
+                        for i, image in enumerate(images):
+                            try:
+                                page_text = pytesseract.image_to_string(image)
+                                text_content += page_text + "\n"
+                            except Exception as page_error:
+                                print(f"⚠️ Error running OCR on page {i}: {page_error}")
+                                continue
                         
                         if text_content.strip():
                             # Create document manually
-                            from langchain_core.documents import Document
                             documents = [Document(
                                 page_content=text_content,
                                 metadata={
@@ -92,16 +100,16 @@ def load_pdf_and_create_vectors(pdf_paths, vector_store_path="vectorstore"):
                                     'source_file': os.path.basename(pdf_path)
                                 }
                             )]
-                            print(f"✅ Manual PDF processing succeeded for: {pdf_path}")
+                            print(f"✅ OCR processing succeeded for: {pdf_path}")
                         else:
-                            print(f"❌ No text content extracted from: {pdf_path}")
+                            print(f"❌ No text content extracted using OCR from: {pdf_path}")
                             continue
                             
-                    except ImportError:
-                        print("❌ PyPDF2 not available for fallback processing")
+                    except ImportError as e:
+                        print(f"❌ OCR dependencies not available: {e}. Make sure pytesseract and pdf2image are installed.")
                         continue
                     except Exception as manual_error:
-                        print(f"❌ Manual PDF processing failed for {pdf_path}: {manual_error}")
+                        print(f"❌ OCR processing failed for {pdf_path}: {manual_error}")
                         continue
                 
                 if not documents:
