@@ -367,7 +367,7 @@ def get_base64_image(image_path):
         print(f"Failed to load image {image_path}: {e}")
         return ""
 
-logo_base64 = get_base64_image(r"D:\logos\TRC-Arrow-logo.jpeg")
+logo_base64 = get_base64_image(os.path.join(os.path.dirname(__file__), 'assets', 'TRC-Arrow-logo.jpeg'))
 logo_html = f'<img src="data:image/jpeg;base64,{logo_base64}" style="width: 100%; height: 100%; object-fit: contain;">' if logo_base64 else '<span style="font-size: 40px;">📊</span>'
 
 st.markdown(f"""
@@ -398,7 +398,7 @@ Securely upload workpapers, perform automated compliance reviews, and generate a
 # --- Enhanced Sidebar ---
 with st.sidebar:
     # Logo - styled via CSS as a premium white plaque
-    st.image(r"D:\logos\trc-logo.gif", width='stretch')
+    st.image(os.path.join(os.path.dirname(__file__), 'assets', 'trc-logo.gif'), width='stretch')
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Clean File upload section
