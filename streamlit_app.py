@@ -200,24 +200,6 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
-    /* Sidebar Logo Plaque */
-    [data-testid="stSidebar"] [data-testid="stImage"] {
-        background: white;
-        padding: 10px;
-        border-radius: 12px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(110,190,72,.3);
-        margin-bottom: 25px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    [data-testid="stSidebar"] [data-testid="stImage"] img {
-        max-width: 240px !important;
-        width: 100% !important;
-        margin: 0 auto;
-        display: block;
-    }
-
     /* PDF Count Badge */
     .pdf-count {
         background: var(--gradient-green);
@@ -397,8 +379,14 @@ Securely upload workpapers, perform automated compliance reviews, and generate a
 
 # --- Enhanced Sidebar ---
 with st.sidebar:
-    # Logo - styled via CSS as a premium white plaque
-    st.image(os.path.join(os.path.dirname(__file__), 'assets', 'trc-logo.gif'), width='stretch')
+    # Logo - Rendered directly via HTML to perfectly crop the massive vertical whitespace without CSS distortion
+    logo_base64_sidebar = get_base64_image(os.path.join(os.path.dirname(__file__), 'assets', 'trc-logo.gif'))
+    if logo_base64_sidebar:
+        st.markdown(f'''
+        <div style="background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(110,190,72,.3); height: 85px; overflow: hidden; position: relative;">
+            <img src="data:image/gif;base64,{logo_base64_sidebar}" style="width: 100%; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); display: block;">
+        </div>
+        ''', unsafe_allow_html=True)
     st.markdown("<br>", unsafe_allow_html=True)
     
     # Clean File upload section
@@ -555,7 +543,11 @@ if "agent" in st.session_state:
         
         with chat_container:
             # Display messages from oldest to newest (Gemini/ChatGPT style)
-            for i, (role, msg) in enumerate(st.session_state.messages):
+            for msg_item in st.session_state.messages:
+                role = msg_item[0]
+                msg = msg_item[1]
+                sources = msg_item[2] if len(msg_item) > 2 else None
+                
                 if role == "user":
                     st.markdown(f"""
                     <div class="user-message">
@@ -568,6 +560,42 @@ if "agent" in st.session_state:
                         <strong>🤖 Assistant:</strong><br>{msg}
                     </div>
                     """, unsafe_allow_html=True)
+                    
+                    if sources:
+                        # Extract unique sources and format citations
+                        import os
+                        unique_sources = {}
+                        for doc in sources:
+                            source_path = doc.metadata.get('source', 'Unknown Document')
+                            filename = os.path.basename(source_path)
+                            page = doc.metadata.get('page', 'N/A')
+                            
+                            # Combine page numbers if same file
+                            if filename not in unique_sources:
+                                unique_sources[filename] = {'pages': set(), 'snippets': []}
+                            if page != 'N/A':
+                                # PyMuPDF pages are 0-indexed, so add 1 for user-facing display
+                                display_page = int(page) + 1 if str(page).isdigit() else page
+                                unique_sources[filename]['pages'].add(str(display_page))
+                            unique_sources[filename]['snippets'].append(doc.page_content)
+
+                        # Render badges
+                        badges_html = "<div style='margin-top: 10px; display: flex; flex-wrap: wrap; gap: 8px;'>"
+                        for filename, data in unique_sources.items():
+                            pages = ", ".join(sorted(data['pages']))
+                            page_str = f" (Page {pages})" if pages else ""
+                            badges_html += f"<span style='background: rgba(110,190,72,0.15); color: #053736; border: 1px solid rgba(110,190,72,0.4); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;'>📄 {filename}{page_str}</span>"
+                        badges_html += "</div>"
+                        
+                        st.markdown(badges_html, unsafe_allow_html=True)
+                        
+                        # Render Expander with raw text snippets
+                        with st.expander("🔍 View Source References"):
+                            for filename, data in unique_sources.items():
+                                st.markdown(f"**{filename}**")
+                                for snippet in data['snippets']:
+                                    st.markdown(f"> *\"{snippet.strip()}\"*")
+                                    st.markdown("---")
         
         # Clear chat button
         if st.button("🗑️ Clear Chat History", type="secondary"):
@@ -602,10 +630,11 @@ if "agent" in st.session_state:
                 with st.spinner("🔄 Searching across all documents..."):
                     try:
                         response = st.session_state.agent.invoke({"query": question})
-                        answer = response["result"]
+                        answer = response.get("result", "")
+                        source_docs = response.get("source_documents", [])
                         
                         st.session_state.messages.append(("user", question))
-                        st.session_state.messages.append(("bot", answer))
+                        st.session_state.messages.append(("bot", answer, source_docs))
                         
                         st.success("✨ Response generated from your document collection!")
                         st.rerun()
@@ -633,10 +662,11 @@ if "agent" in st.session_state:
         with st.spinner("🔄 Searching across all documents..."):
             try:
                 response = st.session_state.agent.invoke({"query": user_query})
-                answer = response["result"]
+                answer = response.get("result", "")
+                source_docs = response.get("source_documents", [])
                 
                 st.session_state.messages.append(("user", user_query))
-                st.session_state.messages.append(("bot", answer))
+                st.session_state.messages.append(("bot", answer, source_docs))
                 
                 st.success("✨ Response generated from your document collection!")
                 st.rerun()
