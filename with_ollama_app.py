@@ -584,7 +584,9 @@ if "agent" in st.session_state:
                             if filename not in unique_sources:
                                 unique_sources[filename] = {'pages': set(), 'snippets': []}
                             if page != 'N/A':
-                                unique_sources[filename]['pages'].add(str(page))
+                                # PyMuPDF pages are 0-indexed, so add 1 for user-facing display
+                                display_page = int(page) + 1 if str(page).isdigit() else page
+                                unique_sources[filename]['pages'].add(str(display_page))
                             unique_sources[filename]['snippets'].append(doc.page_content)
 
                         # Render badges
@@ -592,18 +594,26 @@ if "agent" in st.session_state:
                         for filename, data in unique_sources.items():
                             pages = ", ".join(sorted(data['pages']))
                             page_str = f" (Page {pages})" if pages else ""
-                            badges_html += f"<span style='background: rgba(110,190,72,0.15); color: #053736; border: 1px solid rgba(110,190,72,0.4); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;'><i class='fas fa-file-pdf'></i> {filename}{page_str}</span>"
+                            badges_html += f"<span style='background: rgba(110,190,72,0.15); color: #053736; border: 1px solid rgba(110,190,72,0.4); padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600;'>📄 {filename}{page_str}</span>"
                         badges_html += "</div>"
                         
                         st.markdown(badges_html, unsafe_allow_html=True)
                         
-                        # Render Expander with raw text snippets
-                        with st.expander("🔍 View Source References"):
+                        # Render Expander with clean, truncated text snippets
+                        with st.expander("🔍 View Extracted Context"):
                             for filename, data in unique_sources.items():
-                                st.markdown(f"**{filename}**")
+                                st.markdown(f"<strong style='color: var(--dark); font-size: 14px;'>📄 {filename}</strong>", unsafe_allow_html=True)
                                 for snippet in data['snippets']:
-                                    st.markdown(f"> *\"{snippet}\"*")
-                                    st.markdown("---")
+                                    # Clean up the noisy text
+                                    clean_text = snippet.replace('\n', ' ').strip()
+                                    if len(clean_text) > 350:
+                                        clean_text = clean_text[:350] + "..."
+                                    
+                                    st.markdown(f"""
+                                    <div style='background: rgba(0,0,0,0.03); padding: 12px; border-left: 3px solid var(--green); border-radius: 0 6px 6px 0; margin: 8px 0 15px 0; font-size: 13px; font-style: italic; color: #444; line-height: 1.5;'>
+                                        "{clean_text}"
+                                    </div>
+                                    """, unsafe_allow_html=True)
         
         # Clear chat button
         if st.button("🗑️ Clear Chat History", type="secondary"):
