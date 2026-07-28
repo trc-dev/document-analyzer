@@ -15,94 +15,247 @@ st.set_page_config(
 # Custom CSS for beautiful UI
 st.markdown("""
 <style>
-    /* Main container styling */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    :root {
+        --dark:          #053736;
+        --dark-hover:    #074f4d;
+        --green:         #6ebe48;
+        --green-hover:   #5aaa38;
+        --bg:            #dbf3d0;
+        --pale:          #edf9e5;
+        --pale2:         #f5fef2;
+        --white:         #ffffff;
+        --border:        #c2e8b0;
+        --border2:       #a8d896;
+        --muted:         #3d6b5d;
+        --gradient:         linear-gradient(135deg, #053736 0%, #074f4d 50%, #053736 100%);
+        --gradient-green:   linear-gradient(135deg, #6ebe48 0%, #5aaa38 100%);
+        --gradient-card:    linear-gradient(145deg, #ffffff 0%, #f5fef2 100%);
+        --sh:     0 1px 3px rgba(5,55,54,.1), 0 1px 2px rgba(5,55,54,.06);
+        --sh-md:  0 4px 12px rgba(5,55,54,.1), 0 2px 4px rgba(5,55,54,.06);
+        --r:    8px;
+        --rl:   12px;
+    }
+
+    /* Global Typography */
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Background overrides */
+    [data-testid="stAppViewContainer"] {
+        background-color: var(--bg);
+    }
+    
+    /* Topbar */
+    [data-testid="stHeader"] {
+        background: rgba(255,255,255,.95) !important;
+        backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(194,232,176,.6);
+        box-shadow: 0 2px 12px rgba(5,55,54,.06);
+        height: 58px;
+    }
+
+    /* Sidebar overrides */
+    [data-testid="stSidebar"] {
+        background: var(--gradient) !important;
+        box-shadow: 4px 0 20px rgba(5,55,54,.3);
+    }
+    
+    /* Sidebar Text / Labels */
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] h4,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] .stMarkdown p {
+        color: var(--pale) !important;
+    }
+
+    /* Keep file uploader text dark */
+    [data-testid="stFileUploadDropzone"] * {
+        color: var(--dark) !important;
+    }
+
+    /* Welcome Banner / Main Header */
     .main-header {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        background: var(--gradient);
         padding: 2rem;
-        border-radius: 15px;
-        color: white;
-        text-align: center;
+        border-radius: var(--rl);
+        box-shadow: var(--sh-md);
         margin-bottom: 2rem;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        border: 1px solid rgba(194,232,176,.7);
     }
-    
-    /* Chat message styling */
-    .user-message {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 20px 20px 5px 20px;
-        margin: 10px 0;
-        margin-left: 20%;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    .main-header h1 {
+        color: var(--green);
+        font-weight: 900;
+        letter-spacing: -0.5px;
+        margin: 0;
     }
-    
-    .bot-message {
-        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        color: white;
-        padding: 15px 20px;
-        border-radius: 20px 20px 20px 5px;
-        margin: 10px 0;
-        margin-right: 20%;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    .main-header p {
+        color: rgba(219,243,208,.6);
+        font-size: 1.2rem;
+        font-weight: 500;
+        margin-top: 5px;
     }
-    
-    /* Input container styling */
-    .input-container {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-        margin: 20px 0;
-    }
-    
-    /* Sidebar styling */
+
+    /* Sidebar Content Box (User Card style) */
     .sidebar-content {
-        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+        background: rgba(255,255,255,.06);
+        border: 1px solid rgba(110,190,72,.15);
+        backdrop-filter: blur(4px);
         padding: 20px;
-        border-radius: 15px;
-        color: white;
+        border-radius: var(--rl);
         margin-bottom: 20px;
     }
-    
-    /* PDF file display */
+    .sidebar-content h2 {
+        color: var(--green);
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: 0.2px;
+        margin-top: 0;
+    }
+
+    /* Primary Buttons (Gradient) */
+    button[kind="primary"] {
+        background: var(--gradient-green) !important;
+        color: var(--white) !important;
+        border: none !important;
+        border-radius: var(--r) !important;
+        padding: 0.5rem 2rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.1px !important;
+        transition: all 0.15s cubic-bezier(.4,0,.2,1) !important;
+        box-shadow: 0 2px 8px rgba(5,55,54,.2) !important;
+    }
+    button[kind="primary"]:hover {
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(110,190,72,.3) !important;
+    }
+    button[kind="primary"]:active {
+        transform: scale(0.98) !important;
+    }
+
+    /* Secondary Buttons (Outline) */
+    button[kind="secondary"] {
+        background: rgba(255,255,255,.8) !important;
+        color: var(--dark) !important;
+        border: 1.5px solid var(--border2) !important;
+        border-radius: var(--r) !important;
+        font-weight: 600 !important;
+        backdrop-filter: blur(4px) !important;
+        transition: all 0.15s cubic-bezier(.4,0,.2,1) !important;
+    }
+    button[kind="secondary"]:hover {
+        background: var(--pale) !important;
+        border-color: var(--green) !important;
+        color: var(--green-hover) !important;
+    }
+
+    /* Chat Messages */
+    .user-message {
+        background: white;
+        color: var(--dark);
+        padding: 15px 20px;
+        border-radius: var(--r2xl) var(--r2xl) 5px var(--r2xl);
+        margin: 10px 0;
+        margin-left: 20%;
+        border: 1px solid rgba(194,232,176,.7);
+        box-shadow: var(--sh);
+    }
+    .bot-message {
+        background: var(--gradient-card);
+        color: var(--dark);
+        padding: 15px 20px;
+        border-radius: var(--r2xl) var(--r2xl) var(--r2xl) 5px;
+        margin: 10px 0;
+        margin-right: 20%;
+        border: 1px solid rgba(194,232,176,.7);
+        border-left: 4px solid var(--green);
+        box-shadow: var(--sh-md);
+    }
+
+    /* System Status Alerts (Sidebar) */
+    [data-testid="stSidebar"] [data-testid="stAlert"],
+    [data-testid="stSidebar"] [data-testid="stAlert"] * {
+        color: var(--white) !important;
+    }
+
+    /* Sidebar Input Labels (Radio, Select, Checkbox) */
+    [data-testid="stSidebar"] [data-baseweb="radio"] div,
+    [data-testid="stSidebar"] [data-baseweb="select"] div,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] label p {
+        color: var(--white) !important;
+    }
+
+    /* Expander Titles (Sidebar) */
+    [data-testid="stSidebar"] [data-testid="stExpander"] summary,
+    [data-testid="stSidebar"] [data-testid="stExpander"] summary p,
+    [data-testid="stSidebar"] [data-testid="stExpander"] summary span,
+    [data-testid="stSidebar"] [data-testid="stExpander"] summary svg {
+        color: var(--white) !important;
+        fill: var(--white) !important;
+        font-weight: 700 !important;
+    }
+
+    /* Sidebar Logo Plaque */
+    [data-testid="stSidebar"] [data-testid="stImage"] {
+        background: white;
+        padding: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15), inset 0 0 0 1px rgba(110,190,72,.3);
+        margin-bottom: 25px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    [data-testid="stSidebar"] [data-testid="stImage"] img {
+        max-width: 240px !important;
+        width: 100% !important;
+        margin: 0 auto;
+        display: block;
+    }
+
+    /* PDF Count Badge */
     .pdf-count {
-        background: linear-gradient(90deg, #56CCF2 0%, #2F80ED 100%);
-        color: white;
-        padding: 5px 15px;
+        background: var(--gradient-green);
+        color: var(--dark);
+        padding: 6px 15px;
         border-radius: 20px;
-        font-weight: bold;
+        font-weight: 700;
+        font-size: 11px;
+        letter-spacing: 0.2px;
+        text-transform: uppercase;
         margin: 10px 0;
         text-align: center;
+        box-shadow: var(--sh);
     }
     
-    /* Button styling */
-    div.stButton > button {
-        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        border: none;
-        border-radius: 25px;
-        padding: 0.5rem 2rem;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    /* Document Display Row */
+    .doc-row {
+        padding: 5px 0px;
+        margin-bottom: 5px;
     }
-    
-    div.stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    .doc-name {
+        font-weight: 700;
+        color: var(--pale);
+        word-break: break-all;
+        line-height: 1.2;
     }
-    
-    /* Hide form submit button */
-    div[data-testid="stForm"] > div > div > button {
-        display: none;
+    .doc-size {
+        font-size: 11px;
+        color: rgba(255,255,255,.6);
     }
+
+    /* Hide Form Submit Button */
+    div[data-testid="stForm"] > div > div > button { display: none; }
     
-    /* Hide streamlit elements */
+    /* Hide specific Streamlit elements */
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     .stDeployButton {display:none;}
-    
 </style>
 """, unsafe_allow_html=True)
 
@@ -204,211 +357,169 @@ def remove_pdf(index):
         return False
 
 # Main header
-st.markdown("""
-<div class="main-header">
-    <h1>🤖 Smart RAG Assistant</h1>
-    <p style="font-size: 1.2rem; margin-top: 10px;">Ask intelligent questions based on multiple PDF documents</p>
+import base64
+
+def get_base64_image(image_path):
+    try:
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode('utf-8')
+    except Exception as e:
+        print(f"Failed to load image {image_path}: {e}")
+        return ""
+
+logo_base64 = get_base64_image(r"D:\logos\TRC-Arrow-logo.jpeg")
+logo_html = f'<img src="data:image/jpeg;base64,{logo_base64}" style="width: 100%; height: 100%; object-fit: contain;">' if logo_base64 else '<span style="font-size: 40px;">📊</span>'
+
+st.markdown(f"""
+<div style="background: white; border-radius: var(--rl); box-shadow: var(--sh-xl); overflow: hidden; margin-bottom: 3rem; position: relative; border: 1px solid rgba(194,232,176,.6);">
+<!-- Decorative background elements -->
+<div style="position: absolute; top: -50%; right: -10%; width: 500px; height: 500px; background: radial-gradient(circle, rgba(110,190,72,.1) 0%, transparent 70%); border-radius: 50%; pointer-events: none;"></div>
+<div style="height: 6px; background: var(--gradient-green); width: 100%;"></div>
+<div style="padding: 45px 50px; display: flex; align-items: center; justify-content: space-between; gap: 30px; position: relative; z-index: 1;">
+<div style="flex: 1;">
+<div style="display: flex; align-items: center; gap: 14px; margin-bottom: 22px;">
+<span style="background: rgba(110,190,72,.12); color: var(--dark); padding: 7px 18px; border-radius: 20px; font-size: 13px; font-weight: 800; border: 1px solid rgba(110,190,72,.3); letter-spacing: 0.8px; text-transform: uppercase;">TRC Consulting</span>
+<span style="background: var(--gradient); color: var(--pale); padding: 7px 18px; border-radius: 20px; font-size: 13px; font-weight: 700; box-shadow: var(--sh); letter-spacing: 0.8px;">Enterprise AI</span>
+</div>
+<h1 style="color: var(--dark); font-weight: 900; font-size: 44px; letter-spacing: -1.2px; margin: 0 0 16px 0; line-height: 1.15;">
+Intelligent <span style="background: var(--gradient-green); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Audit Assistant</span>
+</h1>
+<p style="color: var(--muted); font-size: 18px; margin: 0; line-height: 1.6; max-width: 700px; font-weight: 500;">
+Securely upload workpapers, perform automated compliance reviews, and generate analytical insights instantly using advanced RAG intelligence.
+</p>
+</div>
+<div style="width: 160px; height: 160px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 15px 35px rgba(5,55,54,.15), inset 0 0 0 1px rgba(110,190,72,.2); flex-shrink: 0; overflow: hidden; padding: 5px; position: relative; z-index: 2; transition: transform 0.3s ease;">
+{logo_html}
+</div>
+</div>
 </div>
 """, unsafe_allow_html=True)
 
 # --- Enhanced Sidebar ---
 with st.sidebar:
-    st.markdown("""
-    <div class="sidebar-content">
-        <h2 style="margin-top: 0;">⚙️ Configuration</h2>
-        <p>Upload multiple documents and configure the AI model</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Logo - styled via CSS as a premium white plaque
+    st.image(r"D:\logos\trc-logo.gif", width='stretch')
+    st.markdown("<br>", unsafe_allow_html=True)
     
-    # File upload section
-    st.markdown("### 📁 Document Management")
-    
+    # Clean File upload section
     uploaded_files = st.file_uploader(
-        "Choose PDF documents", 
+        "📄 Upload Workpapers (PDF)", 
         type="pdf",
         accept_multiple_files=True,
-        help="Upload multiple PDF files to create a comprehensive knowledge base"
+        label_visibility="visible"
     )
     
-    # Process uploaded files with enhanced error handling
+    # Process uploaded files silently
     if uploaded_files:
         for uploaded_file in uploaded_files:
             if uploaded_file.name not in [pdf['name'] for pdf in st.session_state.uploaded_pdfs]:
                 try:
-                    # Ensure the 'data/' folder exists
                     os.makedirs("data", exist_ok=True)
-                    
-                    # Save uploaded PDF with explicit flushing
                     pdf_path = os.path.normpath(os.path.join("data", uploaded_file.name))
                     with open(pdf_path, "wb") as f:
                         f.write(uploaded_file.getvalue())
-                        f.flush()  # Force write to disk
-                        os.fsync(f.fileno())  # Ensure OS writes to storage
+                        f.flush()
+                        os.fsync(f.fileno())
                     
-                    # Verify file was written correctly
                     if os.path.exists(pdf_path) and os.path.getsize(pdf_path) > 0:
                         st.session_state.uploaded_pdfs.append({
                             'name': uploaded_file.name,
                             'path': pdf_path,
                             'size': len(uploaded_file.getvalue())
                         })
-                        print(f"✅ Successfully saved: {pdf_path}")
-                        
-                        # Mark vectorstore as outdated when new files are added
                         if st.session_state.vectorstore_created:
                             st.session_state.vectorstore_created = False
                             if "agent" in st.session_state:
                                 del st.session_state.agent
-                    else:
-                        st.error(f"❌ Failed to save {uploaded_file.name}")
-                        
                 except Exception as e:
                     st.error(f"❌ Error saving {uploaded_file.name}: {str(e)}")
-                    print(f"❌ Error details: {e}")
     
-    # Display uploaded PDFs
+    # Minimal file management
     if st.session_state.uploaded_pdfs:
-        st.markdown(f"""
-        <div class="pdf-count">
-            📚 {len(st.session_state.uploaded_pdfs)} PDF(s) Uploaded
-        </div>
-        """, unsafe_allow_html=True)
-        
-        st.markdown("**Uploaded Documents:**")
-        for i, pdf in enumerate(st.session_state.uploaded_pdfs):
-            col1, col2 = st.columns([3, 1])
-            with col1:
-                # Show file status
-                file_exists = os.path.exists(pdf['path'])
-                status_icon = "✅" if file_exists else "❌"
-                st.markdown(f"{status_icon} {pdf['name']}")
-                st.caption(f"Size: {pdf['size']/1024:.1f} KB")
-            with col2:
-                if st.button("🗑️", key=f"delete_{i}", help="Remove this PDF"):
-                    if remove_pdf(i):
-                        st.success(f"✅ Removed {pdf['name']}")
+        with st.expander(f"📚 Manage Uploaded Documents ({len(st.session_state.uploaded_pdfs)})"):
+            for i, pdf in enumerate(st.session_state.uploaded_pdfs):
+                col1, col2 = st.columns([5, 1])
+                with col1:
+                    st.markdown(f"<span style='color: var(--pale); font-size: 13px; word-break: break-all;'>{pdf['name']}</span>", unsafe_allow_html=True)
+                with col2:
+                    if st.button("✕", key=f"delete_{i}", help="Remove"):
+                        remove_pdf(i)
                         st.rerun()
-                    else:
-                        st.error(f"❌ Failed to remove {pdf['name']}")
-        
-        # Clear all PDFs button
-        if st.button("🗑️ Remove All PDFs", type="secondary"):
-            if clear_all_pdfs():
-                st.success("✅ All PDFs removed successfully!")
+            if st.button("Clear All Files", type="secondary", use_container_width=True):
+                clear_all_pdfs()
                 st.rerun()
-            else:
-                st.error("❌ Error occurred while removing PDFs")
     
-    # Model selection
-    st.markdown("### 🧠 AI Model Selection")
-    model_name = st.selectbox(
-        "Choose AI Model", 
-        [
-            "llama-3.3-70b-versatile",
-            "llama-3.1-8b-instant",
-            "llama3-70b-8192",
-            "llama3-8b-8192",
-            "mixtral-8x7b-32768",
-            "gemma2-9b-it", 
-            "deepseek-r1-distill-llama-70b"
-        ],
-        help="Select the AI model for processing your queries"
-    )
+    # Advanced Settings (Model Selection)
+    with st.expander("⚙️ Advanced Settings"):
+        model_name = st.selectbox(
+            "AI Model", 
+            [
+                "llama-3.3-70b-versatile",
+                "llama-3.1-8b-instant",
+                "llama3-70b-8192",
+                "llama3-8b-8192",
+                "mixtral-8x7b-32768",
+                "gemma2-9b-it", 
+                "deepseek-r1-distill-llama-70b"
+            ],
+            label_visibility="collapsed"
+        )
     
-    # Load agent button with enhanced validation
-    st.markdown("### 🚀 Initialize System")
-    if st.button("🔄 Process Documents & Load Agent", use_container_width=True):
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Primary Action Area
+    if st.button("🚀 Initialize System", type="primary", use_container_width=True):
         if st.session_state.uploaded_pdfs:
             try:
-                # Validate files exist before processing
                 valid_files = ensure_files_exist()
-                
                 if not valid_files:
-                    st.error("❌ No valid PDF files found. Please re-upload your documents.")
-                    st.session_state.uploaded_pdfs = []  # Clear invalid entries
+                    st.error("❌ No valid PDF files found.")
+                    st.session_state.uploaded_pdfs = []
                     st.rerun()
                 
-                # Create progress bar
                 progress_bar = st.progress(0)
                 status_text = st.empty()
                 
-                # Process all PDFs
-                status_text.text("📄 Processing PDF documents...")
+                status_text.markdown("<div style='color: white; font-weight: 600; text-align: center; margin-bottom: 10px;'>📄 Processing PDF documents...</div>", unsafe_allow_html=True)
                 progress_bar.progress(25)
                 
-                # Get valid PDF paths
                 pdf_paths = [pdf['path'] for pdf in valid_files if os.path.exists(pdf['path'])]
-                
-                if not pdf_paths:
-                    raise ValueError("No accessible PDF files found after validation")
-                
-                print(f"🔍 Processing {len(pdf_paths)} PDF files: {pdf_paths}")
-                
-                # Create vectorstore with all PDFs
                 load_pdf_and_create_vectors(pdf_paths)
                 st.session_state.vectorstore_created = True
                 progress_bar.progress(60)
                 
-                # Loading agent
-                status_text.text("🤖 Loading AI Agent...")
+                status_text.markdown("<div style='color: white; font-weight: 600; text-align: center; margin-bottom: 10px;'>🤖 Loading AI Agent...</div>", unsafe_allow_html=True)
                 progress_bar.progress(80)
                 st.session_state.agent = load_agent(model_name=model_name)
                 
-                # Complete
                 progress_bar.progress(100)
-                status_text.text("🎉 Ready to assist!")
-                
-                st.balloons()
-                st.success(f"🎉 Agent loaded with {len(pdf_paths)} PDF(s)!")
+                status_text.empty()
+                st.success(f"✨ System initialized with {len(pdf_paths)} document(s)!")
                 
             except Exception as e:
-                st.error(f"❌ Error processing documents: {str(e)}")
-                print(f"🔍 Detailed error: {e}")
-                
-                # Add debug information
-                st.error("Debug Information:")
-                st.code(f"""
-Current directory: {os.getcwd()}
-Data directory exists: {os.path.exists('data')}
-Data directory contents: {os.listdir('data') if os.path.exists('data') else 'N/A'}
-Session PDFs: {len(st.session_state.uploaded_pdfs)}
-Valid files found: {len(ensure_files_exist())}
-                """)
+                st.error(f"❌ Initialization failed: {str(e)}")
         else:
-            st.error("⚠️ Please upload at least one PDF first.")
-    
-    # Update knowledge base button
+            st.error("⚠️ Please upload a PDF first.")
+            
+    # Update knowledge base button (only shown if already initialized)
     if st.session_state.vectorstore_created and st.session_state.uploaded_pdfs:
-        if st.button("➕ Update Knowledge Base", use_container_width=True, help="Add new PDFs to existing knowledge base"):
+        if st.button("Update Knowledge Base", type="secondary", use_container_width=True):
             try:
-                with st.spinner("🔄 Updating knowledge base..."):
+                with st.spinner("🔄 Updating..."):
                     valid_files = ensure_files_exist()
                     pdf_paths = [pdf['path'] for pdf in valid_files if os.path.exists(pdf['path'])]
-                    
-                    if not pdf_paths:
-                        raise ValueError("No valid PDF paths found in session state.")
-                    
-                    # Recreate vectorstore with all PDFs
                     load_pdf_and_create_vectors(pdf_paths)
-                    
-                    # Reload agent with updated vectorstore
                     st.session_state.agent = load_agent(model_name=model_name)
-                    
-                    st.success("✅ Knowledge base updated successfully!")
-                    
+                    st.success("✅ Knowledge base updated!")
             except Exception as e:
-                st.error(f"❌ Error updating knowledge base: {str(e)}")
-    
-    # System status
-    st.markdown("### 📊 System Status")
+                st.error(f"❌ Update failed: {str(e)}")
+
+    # Clean System Status
+    st.markdown("<hr style='border-color: rgba(194,232,176,.2); margin: 20px 0;'>", unsafe_allow_html=True)
     if "agent" in st.session_state:
-        st.success("🟢 Agent: Active")
-        st.info(f"📚 Knowledge Base: {len(st.session_state.uploaded_pdfs)} document(s)")
-        st.info(f"🧠 Model: {model_name}")
+        st.markdown(f"<div style='text-align: center; color: var(--pale); font-size: 13px;'><span style='color: #6ebe48;'>🟢 Active</span> &nbsp;|&nbsp; 📚 {len(st.session_state.uploaded_pdfs)} Docs &nbsp;|&nbsp; 🧠 {model_name.split('-')[0].capitalize()}</div>", unsafe_allow_html=True)
     else:
-        st.info("🔴 Agent: Not Loaded")
-        if st.session_state.uploaded_pdfs:
-            st.warning(f"📚 {len(st.session_state.uploaded_pdfs)} PDF(s) ready for processing")
+        st.markdown("<div style='text-align: center; color: rgba(255,255,255,.5); font-size: 13px;'>🔴 System Not Initialized</div>", unsafe_allow_html=True)
 
     # Debug mode (remove in production)
     if st.checkbox("🔍 Debug Mode"):
@@ -435,78 +546,7 @@ Valid files found: {len(ensure_files_exist())}
 
 # --- Enhanced Main Chat Interface ---
 if "agent" in st.session_state:
-    st.markdown("""
-    <div class="input-container">
-        <h3 style="margin-top: 0; color: #667eea;">💬 Ask Questions About Your Documents</h3>
-        <p style="color: #666; margin-bottom: 15px;">The AI can search across all uploaded PDF documents to answer your questions.</p>
-        <p style="color: #888; font-size: 0.9em; margin-bottom: 15px;">💡 Press <strong>Enter</strong> to submit your question</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Use form to capture Enter key press - full width
-    with st.form(key="search_form", clear_on_submit=True):
-        user_query = st.text_input(
-            "Type your question here...", 
-            placeholder="Ask anything about your uploaded documents...",
-            label_visibility="collapsed"
-        )
-        # Hidden submit button for form (triggered by Enter)
-        form_submitted = st.form_submit_button("Submit", type="primary")
-    
-    # Quick question suggestions
-    st.markdown("**💡 Quick Questions:**")
-    col1, col2, col3, col4 = st.columns(4)
-    
-    quick_questions = [
-        "Summarize the main points",
-        "What are the key findings?", 
-        "List important dates",
-        "Explain the methodology"
-    ]
-    
-    for i, (col, question) in enumerate(zip([col1, col2, col3, col4], quick_questions)):
-        with col:
-            if st.button(question, key=f"quick_{i}", use_container_width=True):
-                # Process quick question immediately
-                with st.spinner("🔄 Searching across all documents..."):
-                    try:
-                        # Get response from agent
-                        response = st.session_state.agent.invoke({"query": question})
-                        answer = response["result"]
-                        
-                        # Save to chat history
-                        st.session_state.messages.append(("user", question))
-                        st.session_state.messages.append(("bot", answer))
-                        
-                        # Success notification
-                        st.success("✨ Response generated from your document collection!")
-                        st.rerun()
-                        
-                    except Exception as e:
-                        st.error(f"❌ Error occurred: {str(e)}")
-    
-    # Process query when form is submitted (Enter pressed)
-    if form_submitted and user_query and user_query.strip():
-        with st.spinner("🔄 Searching across all documents..."):
-            try:
-                # Get response from agent
-                response = st.session_state.agent.invoke({"query": user_query})
-                answer = response["result"]
-                
-                # Save to chat history
-                st.session_state.messages.append(("user", user_query))
-                st.session_state.messages.append(("bot", answer))
-                
-                # Success notification
-                st.success("✨ Response generated from your document collection!")
-                
-                # Rerun to update chat
-                st.rerun()
-                
-            except Exception as e:
-                st.error(f"❌ Error occurred: {str(e)}")
-    
-    # Display chat history with enhanced styling
+    # 1. Display chat history with enhanced styling
     if st.session_state.messages:
         st.markdown("### 💭 Conversation History")
         
@@ -514,8 +554,8 @@ if "agent" in st.session_state:
         chat_container = st.container()
         
         with chat_container:
-            # Display messages from newest to oldest
-            for i, (role, msg) in enumerate(reversed(st.session_state.messages)):
+            # Display messages from oldest to newest (Gemini/ChatGPT style)
+            for i, (role, msg) in enumerate(st.session_state.messages):
                 if role == "user":
                     st.markdown(f"""
                     <div class="user-message">
@@ -536,32 +576,88 @@ if "agent" in st.session_state:
     
     else:
         st.markdown(f"""
-        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; color: white;">
-            <h3>🌟 Welcome to Smart RAG Assistant!</h3>
-            <p>Your {len(st.session_state.uploaded_pdfs)} PDF document(s) have been processed and I'm ready to answer questions.</p>
-            <p>I can search across all your uploaded documents to provide comprehensive answers.</p>
-            <p><strong>Type your question and press Enter!</strong></p>
+        <div style="text-align: center; padding: 40px; background: var(--gradient-card); border: 1px solid var(--green); border-radius: var(--rl); color: var(--dark); box-shadow: var(--sh-md); margin-bottom: 30px;">
+            <h3 style="color: var(--green); font-weight: 800;">🌟 Welcome to TRC Intelligent Assistant!</h3>
+            <p style="color: var(--dark); font-size: 1.1rem;">Your {len(st.session_state.uploaded_pdfs)} PDF document(s) have been processed and I'm ready to answer questions.</p>
+            <p style="color: var(--dark);">I can search across all your uploaded documents to provide comprehensive answers.</p>
         </div>
         """, unsafe_allow_html=True)
 
+    st.markdown("<hr style='border-color: rgba(194,232,176,.5); margin: 30px 0;'>", unsafe_allow_html=True)
+
+    # 2. Quick question suggestions
+    st.markdown("**💡 Quick Questions:**")
+    col1, col2, col3, col4 = st.columns(4)
+    
+    quick_questions = [
+        "Summarize the main points",
+        "Identify any risks or issues", 
+        "List important dates",
+        "Explain the methodology"
+    ]
+    
+    for i, (col, question) in enumerate(zip([col1, col2, col3, col4], quick_questions)):
+        with col:
+            if st.button(question, key=f"quick_{i}", use_container_width=True):
+                with st.spinner("🔄 Searching across all documents..."):
+                    try:
+                        response = st.session_state.agent.invoke({"query": question})
+                        answer = response["result"]
+                        
+                        st.session_state.messages.append(("user", question))
+                        st.session_state.messages.append(("bot", answer))
+                        
+                        st.success("✨ Response generated from your document collection!")
+                        st.rerun()
+                    except Exception as e:
+                        st.error(f"❌ Error occurred: {str(e)}")
+
+    # 3. Input form at the bottom
+    st.markdown("""
+    <div style="background: var(--gradient-card); padding: 24px; border-radius: var(--rl); box-shadow: var(--sh); border: 1px solid rgba(194,232,176,.7); margin: 20px 0;">
+        <h3 style="margin-top: 0; color: var(--dark); font-weight: 800; font-size: 18px;">💬 Ask Questions About Your Documents</h3>
+        <p style="color: var(--green); font-size: 11px; font-weight: 700; text-transform: uppercase; margin-bottom: 0;">💡 Press <strong style="color: var(--dark);">Enter</strong> to submit your question</p>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    # Use form to capture Enter key press
+    with st.form(key="search_form", clear_on_submit=True):
+        user_query = st.text_input(
+            "Type your question here...", 
+            placeholder="Ask anything about your uploaded documents...",
+            label_visibility="collapsed"
+        )
+        form_submitted = st.form_submit_button("Submit", type="primary")
+    
+    if form_submitted and user_query and user_query.strip():
+        with st.spinner("🔄 Searching across all documents..."):
+            try:
+                response = st.session_state.agent.invoke({"query": user_query})
+                answer = response["result"]
+                
+                st.session_state.messages.append(("user", user_query))
+                st.session_state.messages.append(("bot", answer))
+                
+                st.success("✨ Response generated from your document collection!")
+                st.rerun()
+            except Exception as e:
+                st.error(f"❌ Error occurred: {str(e)}")
+
 else:
     st.markdown("""
-    <div style="text-align: center; padding: 60px; background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); border-radius: 15px; color: white; margin: 40px 0;">
-        <h2>🚀 Getting Started with Multi-PDF Analysis</h2>
-        <p style="font-size: 1.1rem; margin: 20px 0;">Follow these simple steps:</p>
-        <div style="text-align: left; max-width: 500px; margin: 0 auto;">
-            <p>📁 <strong>Step 1:</strong> Upload one or multiple PDF documents</p>
-            <p>📚 <strong>Step 2:</strong> Review your uploaded documents list</p>
-            <p>🧠 <strong>Step 3:</strong> Select an AI model</p>
-            <p>🔄 <strong>Step 4:</strong> Click 'Process Documents & Load Agent'</p>
-            <p>💬 <strong>Step 5:</strong> Ask questions by pressing Enter!</p>
+    <div style="text-align: center; padding: 60px; background: var(--gradient); border-radius: var(--rl); color: var(--bg); margin: 40px 0; box-shadow: var(--sh-xl);">
+        <h2 style="color: var(--green); font-weight: 900; font-size: 28px;">🚀 Getting Started with TRC Analysis</h2>
+        <p style="font-size: 1.1rem; margin: 20px 0; color: rgba(219,243,208,.8);">Follow these simple steps to begin:</p>
+        <div style="text-align: left; max-width: 500px; margin: 0 auto; background: rgba(255,255,255,.06); padding: 30px; border-radius: var(--rxl); border: 1px solid rgba(110,190,72,.15); backdrop-filter: blur(12px);">
+            <p style="margin-bottom: 12px;"><span style="color: var(--green); font-weight: bold; margin-right: 8px;">1.</span> Upload one or multiple PDF documents via the sidebar</p>
+            <p style="margin-bottom: 12px;"><span style="color: var(--green); font-weight: bold; margin-right: 8px;">2.</span> Review your uploaded documents list</p>
+            <p style="margin-bottom: 12px;"><span style="color: var(--green); font-weight: bold; margin-right: 8px;">3.</span> Select an AI model from the dropdown</p>
+            <p style="margin-bottom: 12px;"><span style="color: var(--green); font-weight: bold; margin-right: 8px;">4.</span> Click <strong>Process Documents & Load Agent</strong></p>
+            <p style="margin-bottom: 0;"><span style="color: var(--green); font-weight: bold; margin-right: 8px;">5.</span> Ask questions by typing and pressing Enter!</p>
         </div>
-        <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.1); border-radius: 10px;">
-            <h4>✨ Features:</h4>
-            <p>• Upload multiple PDFs at once</p>
-            <p>• Search across all documents simultaneously</p>
-            <p>• Add or remove documents dynamically</p>
-            <p>• Press Enter to submit questions instantly</p>
+        <div style="margin-top: 30px; padding: 20px; background: rgba(255,255,255,0.03); border-radius: 10px; border-top: 1px solid rgba(110,190,72,.1);">
+            <h4 style="color: var(--green); margin-bottom: 10px;">✨ Core Features:</h4>
+            <p style="font-size: 14px; color: rgba(219,243,208,.7);">Cross-document search • Automated compliance checks • Smart insights</p>
         </div>
     </div>
     """, unsafe_allow_html=True)

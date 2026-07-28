@@ -15,5 +15,4 @@ transformers
 torch
 torchvision
 pytesseract
-pdf2image
 pillow

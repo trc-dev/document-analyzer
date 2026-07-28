@@ -5,6 +5,7 @@ from langchain_groq import ChatGroq
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_classic.chains import RetrievalQA
+from app.retriever import get_embeddings
 
 load_dotenv()
 
@@ -20,9 +21,7 @@ def load_agent(vector_store_path="vectorstore", model_name="llama-3.3-70b-versat
     try:
         # Load embeddings and vectorstore
         print(f"🔍 Loading embeddings and vectorstore from: {vector_store_path}")
-        embeddings = HuggingFaceEmbeddings(
-            model_name="sentence-transformers/all-MiniLM-L6-v2"
-        )
+        embeddings = get_embeddings()
         
         if not os.path.exists(vector_store_path):
             raise ValueError(f"Vector store not found at: {vector_store_path}")

@@ -5,6 +5,7 @@ from langchain_ollama import OllamaLLM
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_classic.chains import RetrievalQA
+from app.with_ollama_retriever import get_embeddings
 
 load_dotenv()
 
@@ -20,7 +21,7 @@ def load_agent(vector_store_path="vectorstore", model_name="llama-3.3-70b-versat
     """
     
     # Load embeddings and vectorstore
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
+    embeddings = get_embeddings()
     db = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
     retriever = db.as_retriever()
 
