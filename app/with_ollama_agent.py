@@ -4,11 +4,11 @@ from langchain_groq import ChatGroq
 from langchain_ollama import OllamaLLM
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
-from langchain.chains import RetrievalQA
+from langchain_classic.chains import RetrievalQA
 
 load_dotenv()
 
-def load_agent(vector_store_path="vectorstore", model_name="llama3-70b-8192", provider="groq", ollama_base_url="http://localhost:11434"):
+def load_agent(vector_store_path="vectorstore", model_name="llama-3.3-70b-versatile", provider="groq", ollama_base_url="http://localhost:11434"):
     """
     Load agent with support for both Groq and Ollama providers
     

@@ -306,12 +306,13 @@ with st.sidebar:
         model_name = st.selectbox(
             "Choose Groq Model", 
             [
+                "llama-3.3-70b-versatile",
+                "llama-3.1-8b-instant",
                 "llama3-70b-8192",
+                "llama3-8b-8192",
+                "mixtral-8x7b-32768",
                 "gemma2-9b-it", 
-                "qwen/qwen-2.5-72b-instruct",
-                "deepseek-r1-distill-llama-70b",
-                "llama-3.1-70b-versatile",
-                "mixtral-8x7b-32768"
+                "deepseek-r1-distill-llama-70b"
             ],
             help="Select the Groq model for processing your queries"
         )

@@ -1,6 +1,6 @@
 import os
-from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyMuPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -57,14 +57,14 @@ def load_pdf_and_create_vectors(pdf_paths, vector_store_path="vectorstore"):
                     continue
                 
                 # Try to load the PDF with enhanced error handling
-                print(f"🔄 Loading PDF with PyPDFLoader: {pdf_path}")
-                loader = PyPDFLoader(pdf_path)
+                print(f"🔄 Loading PDF with PyMuPDFLoader: {pdf_path}")
+                loader = PyMuPDFLoader(pdf_path)
                 
                 try:
                     documents = loader.load()
-                    print(f"🔍 PyPDFLoader returned {len(documents)} documents")
+                    print(f"🔍 PyMuPDFLoader returned {len(documents)} documents")
                 except Exception as load_error:
-                    print(f"❌ PyPDFLoader failed for {pdf_path}: {load_error}")
+                    print(f"❌ PyMuPDFLoader failed for {pdf_path}: {load_error}")
                     
                     # Try alternative: read as binary and create document manually
                     try:
@@ -84,7 +84,7 @@ def load_pdf_and_create_vectors(pdf_paths, vector_store_path="vectorstore"):
                         
                         if text_content.strip():
                             # Create document manually
-                            from langchain.schema import Document
+                            from langchain_core.documents import Document
                             documents = [Document(
                                 page_content=text_content,
                                 metadata={

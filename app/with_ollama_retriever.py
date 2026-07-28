@@ -1,6 +1,6 @@
 import os
-from langchain_community.document_loaders import PyPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.document_loaders import PyMuPDFLoader
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
@@ -20,7 +20,7 @@ def load_pdf_and_create_vectors(pdf_paths):
     
     for pdf_path in pdf_paths:
         if os.path.exists(pdf_path):
-            loader = PyPDFLoader(pdf_path)
+            loader = PyMuPDFLoader(pdf_path)
             documents = loader.load()
             
             # Add source information to metadata
