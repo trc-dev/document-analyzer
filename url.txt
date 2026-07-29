@@ -1,0 +1,4 @@
+https://trc-document-analyzer.streamlit.app/
+
+
+deployed on streamlit with TRC-DEV GitHub ID.
