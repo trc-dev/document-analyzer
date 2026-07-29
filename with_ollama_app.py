@@ -200,6 +200,51 @@ st.markdown("""
         font-weight: 700 !important;
     }
 
+    /* File Uploader Dropzone */
+    [data-testid="stFileUploader"] {
+        background: transparent !important;
+    }
+    [data-testid="stFileUploaderDropzone"] {
+        background: white !important;
+        border: 2px dashed rgba(110,190,72,0.5) !important;
+        border-radius: 12px !important;
+        padding: 25px 20px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+        transition: all 0.3s ease !important;
+    }
+    [data-testid="stFileUploaderDropzone"]:hover {
+        border-color: rgba(110,190,72,1) !important;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+        transform: translateY(-2px) !important;
+    }
+    [data-testid="stFileUploaderDropzone"] div {
+        color: var(--dark) !important;
+        text-align: center !important;
+        font-weight: 700 !important;
+    }
+    [data-testid="stFileUploaderDropzone"] small {
+        color: #666 !important;
+        font-weight: 500 !important;
+    }
+    [data-testid="stFileUploaderDropzone"] button {
+        background: var(--gradient-green) !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 20px !important;
+        padding: 5px 25px !important;
+        font-weight: 700 !important;
+        margin: 10px auto !important;
+        display: block !important;
+        width: auto !important;
+    }
+    [data-testid="stFileUploaderDropzone"] button:hover {
+        box-shadow: 0 4px 15px rgba(110,190,72,0.5) !important;
+    }
+
     /* PDF Count Badge */
     .pdf-count {
         background: var(--gradient-green);
