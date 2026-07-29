@@ -190,6 +190,20 @@ st.markdown("""
         color: var(--white) !important;
     }
 
+    /* Expander Container (Sidebar) */
+    [data-testid="stSidebar"] [data-testid="stExpander"] {
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(110,190,72,0.4) !important;
+        border-radius: 12px !important;
+        overflow: hidden !important;
+        margin-bottom: 15px !important;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1) !important;
+        transition: border-color 0.3s ease !important;
+    }
+    [data-testid="stSidebar"] [data-testid="stExpander"]:hover {
+        border-color: rgba(110,190,72,0.8) !important;
+    }
+
     /* Expander Titles (Sidebar) */
     [data-testid="stSidebar"] [data-testid="stExpander"] summary,
     [data-testid="stSidebar"] [data-testid="stExpander"] summary p,
@@ -231,18 +245,21 @@ st.markdown("""
         font-weight: 500 !important;
     }
     [data-testid="stFileUploaderDropzone"] button {
-        background: var(--gradient-green) !important;
-        color: white !important;
-        border: none !important;
+        background: white !important;
+        color: var(--dark) !important;
+        border: 1.5px solid #ffb6c1 !important; /* Light pink border */
         border-radius: 20px !important;
         padding: 5px 25px !important;
         font-weight: 700 !important;
         margin: 10px auto !important;
         display: block !important;
         width: auto !important;
+        transition: all 0.3s ease !important;
     }
     [data-testid="stFileUploaderDropzone"] button:hover {
-        box-shadow: 0 4px 15px rgba(110,190,72,0.5) !important;
+        background: #fff0f5 !important; /* Lavender blush on hover */
+        border-color: #ff69b4 !important; /* Hot pink border on hover */
+        box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2) !important;
     }
 
     /* PDF Count Badge */
@@ -558,7 +575,7 @@ with st.sidebar:
                 st.error(f"❌ Update failed: {str(e)}")
 
     # Clean System Status
-    st.markdown("<hr style='border-color: rgba(194,232,176,.2); margin: 20px 0;'>", unsafe_allow_html=True)
+    st.markdown("<hr style='border-color: rgba(110,190,72,0.4); margin: 25px 0;'>", unsafe_allow_html=True)
     if "agent" in st.session_state:
         st.markdown(f"<div style='text-align: center; color: var(--pale); font-size: 13px;'><span style='color: #6ebe48;'>🟢 Active</span> &nbsp;|&nbsp; 📚 {len(st.session_state.uploaded_pdfs)} Docs &nbsp;|&nbsp; 📡 {provider_name} &nbsp;|&nbsp; 🧠 {model_name.split('-')[0].split(':')[0].capitalize()}</div>", unsafe_allow_html=True)
     else:
