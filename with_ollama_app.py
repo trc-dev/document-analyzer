@@ -222,11 +222,7 @@ st.markdown("""
         background: white !important;
         border: 2px dashed rgba(110,190,72,0.5) !important;
         border-radius: 12px !important;
-        padding: 25px 20px !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
+        padding: 20px !important;
         box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
         transition: all 0.3s ease !important;
     }
@@ -235,31 +231,87 @@ st.markdown("""
         box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
         transform: translateY(-2px) !important;
     }
-    [data-testid="stFileUploaderDropzone"] div {
+    
+    /* Safely target ONLY the top-level text container to prevent breaking file cards */
+    [data-testid="stFileUploaderDropzone"] > div:first-child {
         color: var(--dark) !important;
         text-align: center !important;
         font-weight: 700 !important;
     }
-    [data-testid="stFileUploaderDropzone"] small {
+    [data-testid="stFileUploaderDropzone"] > div:first-child small {
         color: #666 !important;
         font-weight: 500 !important;
     }
-    [data-testid="stFileUploaderDropzone"] button {
-        background: white !important;
+    
+    /* Style ONLY the 'Browse files' button as a rounded pill (excludes the delete button!) */
+    [data-testid="stFileUploaderDropzone"] button:not([aria-label*="Remove"]) {
+        background: white !important; /* White background by default */
         color: var(--dark) !important;
-        border: 1.5px solid #ffb6c1 !important; /* Light pink border */
-        border-radius: 20px !important;
-        padding: 5px 25px !important;
+        border: 1.5px solid rgba(255, 182, 193, 0.8) !important; /* Soft pink border */
+        border-radius: 30px !important; /* fully rounded */
+        padding: 8px 30px !important;
         font-weight: 700 !important;
         margin: 10px auto !important;
         display: block !important;
         width: auto !important;
         transition: all 0.3s ease !important;
     }
-    [data-testid="stFileUploaderDropzone"] button:hover {
-        background: #fff0f5 !important; /* Lavender blush on hover */
-        border-color: #ff69b4 !important; /* Hot pink border on hover */
+    [data-testid="stFileUploaderDropzone"] button:not([aria-label*="Remove"]):hover {
+        background: rgba(255, 182, 193, 0.25) !important; /* Transparent pink on hover */
+        border-color: #ff69b4 !important;
         box-shadow: 0 4px 12px rgba(255, 105, 180, 0.2) !important;
+        transform: translateY(-2px) !important;
+    }
+    
+    /* Safely reset and style the delete 'X' button using its aria-label */
+    [data-testid="stFileUploaderDropzone"] button[aria-label*="Remove"] {
+        background: transparent !important;
+        color: #ff69b4 !important; /* Soft pink cross */
+        border: none !important;
+        border-radius: 50% !important;
+        padding: 5px !important;
+        margin: 0 !important;
+        box-shadow: none !important;
+        transform: none !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 30px !important;
+        height: 30px !important;
+        min-width: 0 !important;
+        transition: background 0.2s ease !important;
+    }
+    [data-testid="stFileUploaderDropzone"] button[aria-label*="Remove"]:hover {
+        background: rgba(255, 105, 180, 0.1) !important; /* Light pink circular highlight on hover */
+    }
+    
+    /* Style the uploaded file card to look extremely professional */
+    [data-testid="stFileUploaderDropzone"] > div:nth-child(2),
+    [data-testid="stFileUploaderDropzone"] > div:last-child {
+        background: white !important;
+        border: 1px solid rgba(110,190,72,0.3) !important; /* Subtle TRC green border */
+        border-radius: 10px !important;
+        padding: 8px 15px !important;
+        margin-top: 15px !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.04) !important;
+        transition: all 0.3s ease !important;
+        overflow: hidden !important;
+    }
+    [data-testid="stFileUploaderDropzone"] > div:nth-child(2):hover,
+    [data-testid="stFileUploaderDropzone"] > div:last-child:hover {
+        border-color: rgba(110,190,72,0.8) !important;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
+    }
+    
+    /* Ensure file card typography is sleek */
+    [data-testid="stFileUploaderDropzone"] > div:nth-child(2) div,
+    [data-testid="stFileUploaderDropzone"] > div:nth-child(2) span {
+        color: var(--dark) !important;
+        font-weight: 600 !important;
+    }
+    [data-testid="stFileUploaderDropzone"] > div:nth-child(2) small {
+        color: var(--dark) !important;
+        opacity: 0.6 !important;
     }
 
     /* PDF Count Badge */
@@ -459,7 +511,20 @@ with st.sidebar:
         label_visibility="visible"
     )
     
-    # Process uploaded files silently
+    # Sync Native Uploader with Session State
+    current_uploaded_names = [f.name for f in uploaded_files] if uploaded_files else []
+    
+    # 1. Detect and remove files that were deleted from the native widget
+    files_to_remove = []
+    for i, pdf in enumerate(st.session_state.uploaded_pdfs):
+        if pdf['name'] not in current_uploaded_names:
+            files_to_remove.append(i)
+            
+    for i in reversed(files_to_remove):
+        remove_pdf(i)
+        st.rerun()
+    
+    # 2. Process newly uploaded files silently
     if uploaded_files:
         for uploaded_file in uploaded_files:
             if uploaded_file.name not in [pdf['name'] for pdf in st.session_state.uploaded_pdfs]:
@@ -483,21 +548,6 @@ with st.sidebar:
                                 del st.session_state.agent
                 except Exception as e:
                     st.error(f"❌ Error saving {uploaded_file.name}: {str(e)}")
-    
-    # Minimal file management
-    if st.session_state.uploaded_pdfs:
-        with st.expander(f"📚 Manage Uploaded Documents ({len(st.session_state.uploaded_pdfs)})"):
-            for i, pdf in enumerate(st.session_state.uploaded_pdfs):
-                col1, col2 = st.columns([5, 1])
-                with col1:
-                    st.markdown(f"<span style='color: var(--pale); font-size: 13px; word-break: break-all;'>{pdf['name']}</span>", unsafe_allow_html=True)
-                with col2:
-                    if st.button("✕", key=f"delete_{i}", help="Remove"):
-                        remove_pdf(i)
-                        st.rerun()
-            if st.button("Clear All Files", type="secondary", use_container_width=True):
-                clear_all_pdfs()
-                st.rerun()
     
     # Advanced Settings (Provider & Model Selection)
     with st.expander("⚙️ Advanced Settings"):
