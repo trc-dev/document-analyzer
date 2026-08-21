@@ -9,7 +9,7 @@ from app.with_ollama_retriever import get_embeddings
 
 load_dotenv()
 
-def load_agent(vector_store_path="vectorstore", model_name="llama-3.3-70b-versatile", provider="groq", ollama_base_url="http://localhost:11434"):
+def load_agent(vector_store_path="vectorstore", model_name="meta-llama/llama-prompt-guard-2-86m", provider="groq", ollama_base_url="http://localhost:11434"):
     """
     Load agent with support for both Groq and Ollama providers
     
