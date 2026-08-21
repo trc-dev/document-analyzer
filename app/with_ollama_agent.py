@@ -23,7 +23,7 @@ def load_agent(vector_store_path="vectorstore", model_name="meta-llama/llama-pro
     # Load embeddings and vectorstore
     embeddings = get_embeddings()
     db = FAISS.load_local(vector_store_path, embeddings, allow_dangerous_deserialization=True)
-    retriever = db.as_retriever()
+    retriever = db.as_retriever(search_kwargs={"k": 1})
 
     # Initialize LLM based on provider
     if provider.lower() == "groq":
